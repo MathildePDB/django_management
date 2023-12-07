@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block body %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-4 py-5">
+        <h1 class="px-2">Créer un compte</h1>
+        <form method="POST" class="px-2">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form|crispy }}
+            </div>
+            <div class="mb-3 text-end">
+                <button class="btn btn-primary" type="submit">Valider</button>
+            </div>
+        </form>
+        <p 
+            class="text-center"
+        >
+            Vous avez déjà un compte ?
+            <a class="link-secondary 
+                    link-offset-3-hover 
+                    link-underline 
+                    link-underline-opacity-0 
+                    link-underline-opacity-75-hover" 
+                href="{% url 'login' %}"
+            >
+                Se connecter
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

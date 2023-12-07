@@ -1,0 +1,4 @@
+Bienvenue sur django blog !
+
+Pour activer votre compte, cliquez sur le lien suivant : 
+{{ scheme }}://{{ site }}/accounts/activate/{{ activation_key }}

@@ -1,0 +1,131 @@
+{% extends "business/business_base.html" %}
+{% block body %}
+{% load bootstrap_icons %}
+{% include 'business/order/order_delete_modal.html' %}
+{% load crispy_forms_filters %}
+<div class="m-5">
+    <h1 class="m-5">Commande {{ order.code }}</h1>
+    <div class="">
+        <div class="">
+            <div class="p-3 m-3">
+                <div class="mx-3">
+                    <h2><strong>Client : </strong>{{ order.customer.first_name }} {{ order.customer.last_name|upper }}
+                    </h2>
+                    {% if order.is_valid == False %}
+                    <div class="d-flex">
+                        <h6 class="m-2"><span class="badge bg-secondary">En cours de validation</span></h6>
+                        <form method="post" action="{% url 'validate_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="validate_button" class="btn btn-link remove-order link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover pe-5">Valider le devis</button>
+                        </form>
+                    </div>
+                    
+                    {% else %}
+                    <span class="badge bg-success p-2">Commande payée</span></h2>
+                    {% endif %}
+                </div>
+                <div class="card-body d-flex flex-column justify-content-end">
+                    <p class="card-text m-1 px-2">
+                        <strong>Adresse : </strong>{{ order.customer.address }} {{ order.customer.zipcode }} {{ order.customer.city }}
+                    </p>
+                    <p class="card-text m-1 px-2">
+                        <strong>Email : </strong>{{ order.customer.email }}
+                    </p>
+                    <p class="card-text m-1 px-2">
+                        <strong>Téléphone : </strong>{{ order.customer.phone_number }}
+                    </p>
+                    {% if is_business_admin %}
+                    <p class="card-text m-1 px-2">
+                        <strong>Admin : </strong>
+                    </p>
+                    {% endif %}
+                    <p class="card-text pt-4 d-flex">
+                        {% if order.is_valid == False %}
+                        <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover pe-5 m-3"
+                            href="{% url 'update_product_order' order.id %}">Modifier
+                        </a>
+                        {% endif %}
+                        <button 
+                            class="delete-order-button btn btn-link remove-order link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover pe-5"
+                            data-order-id="{{ order.id }}"
+                            data-toggle="modal"
+                        >
+                            Supprimer la commande
+                        </button>
+                        <a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover m-3"
+                            href="{% url 'generate_pdf' order.id %}" id="delete-order-button" target="_blank"
+                        >
+                            Imprimer
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <div class="p-3 m-3">
+
+                <h3 class="my-4">Liste des produits</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Prix unitaire</th>
+                            <th scope="col">TVA</th>
+                            <th scope="col">Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if order_detail %}
+                        {% for detail in order_detail %}
+                        <tr>
+                            <td scope="row">{{ detail.product.name }}</td>
+                            <td>
+                                <div class="quantity-container">
+                                    <span class="quantity">{{ detail.quantity }}</span>
+                                </div>
+                            </td>
+                            <td class="unit-price">{{ detail.product.formatted_price }}</td>
+                            <td>{{ detail.product.get_taxe_display }}</td>
+                            <td id="total-amount">{{ detail.subtotal_ht|floatformat:2 }}€</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <th colspan="4" class="text-end">Total de la commande HT</th>
+                            <th id="total-ht">{{ total|floatformat:2 }}€</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="text-end">Total de la commande TTC</th>
+                            <th id="total-ttc">{{ total_taxe|floatformat:2 }}€</th>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5">Pas encore de produit</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Lorsqu'un bouton de suppression est cliqué
+        $('.delete-order-button').on('click', function() {
+            // Récupérez les données nécessaires depuis le bouton
+            var orderID = $(this).data('order-id');
+            console.log('ID de la commande : ' + orderID);
+
+            // Vérifiez si le bouton est destiné à la suppression
+            if ($(this).hasClass('delete-order-button')) {
+                // Si c'est un bouton de suppression, affichez la modal de confirmation
+                $('#confirm-delete-modal').modal('show');
+            } else {
+                // Sinon, c'est un bouton de validation, ne faites rien d'autre
+            }
+        });
+    });
+</script>
+{% endblock %}

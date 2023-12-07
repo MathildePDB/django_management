@@ -1,0 +1,21 @@
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer cette commande ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="{% url 'delete_order' order.id %}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-link link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" value="Confirmer la suppression">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

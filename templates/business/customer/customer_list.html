@@ -1,0 +1,47 @@
+{% extends "business/business_base.html" %}
+{% block body %}
+{% load bootstrap_icons %}
+<div class="mx-5 ms-5">
+    <h1 class="m-3">Liste des devis</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Adresse</th>
+                <th scope="col">email</th>
+                <th scope="col">Téléphone</th>
+                <th scope="col">Admin</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for customer in page_obj %}
+            <tr>
+                <th scope="row">{{ customer.first_name }} {{ customer.last_name|upper }}</th>
+                <td>{{ customer.address }}, </br>{{ customer.zipcode }} {{ customer.city }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.phone_number }}</td>
+                <td>{{ customer.user }}</td>
+                <td><a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="{% url 'detail_customer' customer.id %}">détails</a></td>
+        {% endfor %}  
+        </tbody>
+    </table>
+    <div class="pagination d-flex justify-content-center">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo;</a>
+                <a href="?page={{ page_obj.previous_page_number }}">précédente</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">suivante</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

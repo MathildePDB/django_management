@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-4 py-5">
+        <h1 class="px-2">Mon compte</h1>
+        <a class="link-secondary 
+        link-offset-3-hover 
+        link-underline 
+        link-underline-opacity-0 
+        link-underline-opacity-75-hover" 
+    href="{% url 'password_change' %}"
+>
+    Modifier mon mot de passe
+</a>
+    </div>
+</div>
+{% endblock %}

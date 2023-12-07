@@ -1,0 +1,72 @@
+{% extends "business/business_base.html" %}
+{% block body %}
+{% load bootstrap_icons %}
+{% include 'business/customer/customer_delete_modal.html' %}
+<div class="m-5">
+    <h1 class="m-5">Fiche client</h1>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="p-3 m-3">
+                <div class="card-title mx-3">
+                    <h2>{{ customer.first_name }} {{ customer.last_name|upper }}</h2>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-end">
+                    <p class="card-text m-1 px-2">
+                        <strong>Adresse : </strong>{{ customer.address }}, {{ customer.zipcode }} {{ customer.city|upper }}
+                    </p>
+                    <p class="card-text m-1 px-2">
+                        <strong>Email : </strong>{{ customer.email }}
+                    </p>
+                    <p class="card-text m-1 px-2">
+                        <strong>Téléphone : </strong>{{ customer.phone_number }}
+                    </p>
+                    {% if is_business_admin %}
+                    <p class="card-text m-1 px-2">
+                        <strong>Admin : </strong>{{ customer.user.username }}
+                    </p>
+                    {% endif %}
+                    <p class="card-text pt-4 d-flex">
+                        <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover me-5" href="{% url 'update_customer' customer.id %}">Modifier le client</a>
+                        <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#" id="delete-customer-button">Supprimer le client</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="p-3 m-3">
+                {% if estimates %}
+                <h3 class="my-4">Liste des devis</h3>
+                <ul class="list-group mx-3">
+                    {% for estimate in estimates %}
+                    <li class="list-group-item">{{ estimate.code }} - {{ estimate.created_at }} - <a href="{% url 'detail_order' estimate.id %}">Détails</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if bills %}
+                <h3 class="my-4">Liste des factures</h3>
+                <ul class="list-group mx-3">
+                    {% for bill in bills %}
+                    <li class="list-group-item">{{ bill.code }} - {{ bill.created_at }} - <a href="{% url 'detail_order' bill.id %}">Détails</a></li>
+                <p></p>
+                {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#delete-customer-button").click(function () {
+            // Ouvrez le modal de confirmation de suppression
+            $("#confirm-delete-modal").modal("show");
+        });
+    });
+</script>
+{% endblock %}

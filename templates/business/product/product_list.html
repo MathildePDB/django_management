@@ -1,0 +1,62 @@
+{% extends "business/business_base.html" %}
+{% block body %}
+{% load bootstrap_icons %}
+<div class="mx-5 ms-5">
+    <h1 class="m-3">Liste des produits</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Description</th>
+                <th scope="col">Prix</th>
+                <th scope="col">Taxe</th>
+                <th scope="col">Stock</th>
+                {% if request.user.groups.all.0.name == "Business_admin" %}
+                <th scope="col"></th>
+                <th scope="col"></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in page_obj %}
+            <tr>
+                <th scope="row">{{ product.name }}</th>
+                <td>{{ product.description }}</td>
+                <td class="text-end">{{ product.formatted_price }}</td>
+                <td class="text-end">{{ product.taxe }}</td>
+                <td class="text-end">{{ product.stock }}</td>
+                {% if request.user.groups.all.0.name == "Business_admin" %}
+                <td class="text-end">
+                    <a class="btn btn-link link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover pe-1" href="{% url 'update_product' product.id %}">modifier</a>
+                </td>
+                <td>
+                    <form method="post" action="{% url 'delete_product' product.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id">
+                        <input type="submit" class="btn btn-link link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover delete-product-link" value="supprimer">
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}  
+        </tbody>
+    </table>
+    <div class="pagination d-flex justify-content-center">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo;</a>
+                <a href="?page={{ page_obj.previous_page_number }}">précédente</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">suivante</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

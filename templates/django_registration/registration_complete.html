@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-8">
+        <h1 class="p-5">Votre compte a été créé avec succès</h1>
+        <p class="px-5">Merci de confirmer votre adresse e-mail en cliquant sur le lien que vous avez reçu par email.</p>
+        <a href="{% url 'index' %}" class="link-secondary link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover px-5">Retour à la page d'accueil</a>
+    </div>
+</div>
+{% endblock %}

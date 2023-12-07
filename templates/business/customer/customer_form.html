@@ -1,0 +1,58 @@
+{% extends "business/business_base.html" %}
+{% load crispy_forms_filters %}
+{% block body %}
+<div class="m-5">
+    <h1 class="m-5">Ajouter un client</h1>
+    <div class="px-5 w-75">
+        <form method="POST" class="mx-5 form-horizontal">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <label for="{{ form.first_name.id_for_label }}" class="col-sm-3 col-form-label">{{ form.first_name.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.first_name }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.last_name.id_for_label }}" class="col-sm-3 col-form-label">{{ form.last_name.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.address.id_for_label }}" class="col-sm-3 col-form-label">{{ form.address.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.address }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.zipcode.id_for_label }}" class="col-sm-3 col-form-label">{{ form.zipcode.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.zipcode }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.city.id_for_label }}" class="col-sm-3 col-form-label">{{ form.city.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.city }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-3 col-form-label">{{ form.email.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.email }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-3 col-form-label">{{ form.phone_number.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.phone_number }}
+                </div>
+            </div>
+            <div class="my-5 d-flex justify-content-between">
+                <a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:window.history.back();">Retour</a>
+                <button class="btn btn-link link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" type="submit">Valider</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

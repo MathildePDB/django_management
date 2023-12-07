@@ -1,0 +1,46 @@
+{% extends "business/business_base.html" %}
+{% load crispy_forms_filters %}
+{% block body %}
+<div class="m-5">
+    <h1 class="m-5">Nouveau produit</h1>
+    <div class="px-5 w-75">
+        <form method="POST" class="mx-5 form-horizontal">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-3 col-form-label">{{ form.name.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.description.id_for_label }}" class="col-sm-3 col-form-label">{{ form.description.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.description }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.price.id_for_label }}" class="col-sm-3 col-form-label">{{ form.price.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.price }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.taxe.id_for_label }}" class="col-sm-3 col-form-label">{{ form.taxe.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.taxe }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="{{ form.stock.id_for_label }}" class="col-sm-3 col-form-label">{{ form.stock.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.stock }}
+                </div>
+            </div>
+            <div class="my-5 d-flex justify-content-between">
+                <a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:window.history.back();">Retour</a>
+                <button class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" type="submit">Valider</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% load bootstrap_icons %}
+<div class="bg-dark" style="min-height: 100vh; height: 100%;">
+    <div class="d-flex flex-column justify-content-between flex-shrink-0 p-3 text-white" style="height: 100vh;">
+        <ul class="nav nav-pills flex-column">
+           <li class="nav-item">
+               {% if request.user.groups.all.0.name == "Business_admin" %}
+               <a href="{% url 'business_dashbord' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'speedometer2' size='1.2em' %}
+                   </span>
+                   Tableau de bord
+               </a>
+               {% endif %}
+               {% if request.user.groups.all.0.name == "Business_user" %}
+               <a href="{% url 'business_dashbord' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'speedometer2' size='1.2em' %}
+                   </span>
+                   Tableau de bord
+               </a>
+               {% endif %}
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'customers' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'card-list' size='1.2em' %}
+                   </span>
+                   Tous les clients
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'add_customer' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'plus-circle' size='1.2em' %}
+                   </span>
+                   Ajouter un client
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'estimates' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'clipboard' size='1.2em' %}
+                   </span>   
+                   Tous les devis
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'bills' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'clipboard-check' size='1.2em' %}
+                   </span>
+                   Toutes les factures
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'add_order' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'plus-circle' size='1.2em' %}
+                   </span>
+                   Nouveau devis
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'products' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'bag' size='1.2em' %}
+                   </span>
+                   Voir les produits
+               </a>
+           </li>
+           {% if request.user.groups.all.0.name == "Business_admin" %}
+           <li class="nav-item">
+               <a href="{% url 'add_product' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'plus-circle' size='1.2em' %}
+                   </span>
+                   Ajouter un produit
+               </a>
+           </li>
+           {% endif %}
+       </ul>
+       <ul class="nav nav-pills flex-column">
+           <li class="nav-item">
+               <a href="{% url 'index' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'house' size='1.2em' %}
+                   </span>
+                   Retour au site
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="#" class="disabled link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'person-circle' size='1.2em' %}
+                   </span>
+                   {{ user.username }}
+               </a>
+           </li>
+           <li class="nav-item">
+               <a href="{% url 'logout' %}" class="link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover d-flex align-items-center p-2">
+                   <span class="pe-3">
+                       {% bs_icon 'box-arrow-left' size='1.2em' %}
+                   </span>
+                   Se déconnecter
+               </a>
+           </li>
+       </ul>
+    </div>
+</div>

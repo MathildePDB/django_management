@@ -1,0 +1,1 @@
+Activation de votre compte django_blog

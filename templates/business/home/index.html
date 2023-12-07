@@ -1,0 +1,409 @@
+{% extends "business/business_base.html" %} {% block body %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div class="m-5">
+    <h1 class="px-2">Tableau de bord</h1>
+    <div class="row">
+        <div class="col-md-8 p-2">
+            <canvas id="bills"></canvas>
+        </div>
+        <div class="col-md-4 p-2">
+            <div class="container mt-5">
+                <h6 class="text-center">Planning</h6>
+                <div id="calendar" class="border p-3"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 p-2">
+            <canvas id="orders"></canvas>
+        </div>
+        <div class="col-md-6 p-2">
+            <canvas id="productSales"></canvas>
+        </div>
+        <div class="col-md-3 p-2">
+            <h6 class="text-center">Carte des clients</h6>
+            <div id="map" style="height: 300px;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 p-2">
+            <canvas id="valid"></canvas>
+        </div>
+        <div class="col-md-4 p-2">
+            <canvas id="total"></canvas>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // graphique du nombre de commandes
+        const ctx = document.getElementById("bills");
+
+        // Convertissez les données JSON en objets JavaScript
+        const dataLabels = JSON.parse("{{ data_labels|escapejs }}");
+        const dataValues = JSON.parse("{{ data_values|escapejs }}");
+
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: dataLabels,
+                datasets: [
+                    {
+                        label: "nombre de commandes",
+                        data: dataValues,
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Nombre de commandes'
+                    },
+                    legend: {
+                        display: false,
+                    },
+                }
+            },
+        });
+
+        // graphique qui affiche la proportion de commande par client
+        const cde = document.getElementById("orders");
+
+        const ordersByCustomerData = JSON.parse("{{ customers_data_json|escapejs }}");
+
+        new Chart(cde, {
+            type: "pie",
+            data: {
+                labels: ordersByCustomerData.map(
+                    (item) => `${item.first_name} ${item.last_name}`
+                ),
+                datasets: [
+                    {
+                        data: ordersByCustomerData.map((item) => item.count),
+                        backgroundColor: [
+                            "rgba(205, 97, 85, 0.7)",
+                            "rgba(236, 112, 99, 0.7)",
+                            "rgba(175, 122, 197, 0.7)",
+                            "rgba(165, 105, 189, 0.7)",
+                            "rgba(84, 153, 199 , 0.7)",
+                            "rgba(93, 173, 226 , 0.7)",
+                            "rgba(72, 201, 176, 0.7)",
+                            "rgba(69, 179, 157, 0.7)",
+                            "rgba(82, 190, 128, 0.7)",
+                            "rgba(88, 214, 141, 0.7)",
+                            "rgba(244, 208, 63, 0.7)",
+                            "rgba(245, 176, 65, 0.7)",
+                            "rgba(235, 152, 78, 0.7)",
+                            "rgba(220, 118, 51, 0.7)",
+                        ],
+                        borderColor: [
+                            "rgba(205, 97, 85, 1)",
+                            "rgba(236, 112, 99, 1)",
+                            "rgba(175, 122, 197, 1)",
+                            "rgba(165, 105, 189, 1)",
+                            "rgba(84, 153, 199 , 1)",
+                            "rgba(93, 173, 226 , 1)",
+                            "rgba(72, 201, 176, 1)",
+                            "rgba(69, 179, 157, 1)",
+                            "rgba(82, 190, 128, 1)",
+                            "rgba(88, 214, 141, 1)",
+                            "rgba(244, 208, 63, 1)",
+                            "rgba(245, 176, 65, 1)",
+                            "rgba(235, 152, 78, 1)",
+                            "rgba(220, 118, 51, 1)",
+                        ],
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options : {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Part des commandes clients'
+                    },
+                    legend: {
+                        display: false,
+                    },
+                }
+            }
+        });
+
+        // Fonction pour générer le calendrier basé sur la date actuelle
+        function generateCalendar() {
+         
+            // Obtenez la date actuelle
+            const currentDate = new Date();
+         
+            // Obtenez le premier jour du mois
+            const firstDay = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                1
+            );
+
+            // Obtenez le nombre de jours dans le mois
+            const lastDay = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth() + 1,
+                0
+            );
+
+            const numDays = lastDay.getDate();
+            // Obtenez le jour de la semaine du premier jour du mois
+            const startDayOfWeek = firstDay.getDay();
+
+            // Obtenez la référence de l'élément du calendrier
+            const calendar = document.getElementById("calendar");
+            // Effacez le contenu précédent du calendrier
+            calendar.innerHTML = "";
+            // Ajoutez le mois en cours en haut
+            const monthElement = document.createElement("div");
+            monthElement.className = "mb-2";
+            monthElement.textContent = new Intl.DateTimeFormat("fr-FR", {
+                month: "long",
+                year: "numeric",
+            }).format(currentDate);
+            calendar.appendChild(monthElement);
+            // Ajoutez les jours de la semaine
+            const daysOfWeek = ["L", "M", "M", "J", "V", "S", "D"];
+            const headerRow = document.createElement("div");
+            headerRow.className = "row";
+            for (let day of daysOfWeek) {
+                const dayElement = document.createElement("div");
+                dayElement.className =
+                    "col text-center border bg-secondary-subtle";
+                dayElement.textContent = day;
+                headerRow.appendChild(dayElement);
+            }
+            calendar.appendChild(headerRow);
+            // Ajoutez les jours du mois
+            let currentDay = 1;
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement("div");
+                row.className = "row";
+                for (let j = 0; j < 7; j++) {
+                    const dayElement = document.createElement("div");
+                    dayElement.className = "col text-center border";
+                    if (i === 0 && j < startDayOfWeek) {
+                        // Ajoutez des cellules vides pour les jours avant le premier jour du mois
+                        dayElement.textContent = "";
+                    } else if (currentDay > numDays) {
+                        // Ajoutez des cellules vides pour les jours après la fin du mois
+                        dayElement.textContent = "";
+                    } else {
+                        // Ajoutez le jour du mois
+                        dayElement.textContent = currentDay;
+                        currentDay++;
+                    }
+                    row.appendChild(dayElement);
+                }
+                calendar.appendChild(row);
+            }
+        }
+        // Appelez la fonction pour générer le calendrier
+        generateCalendar();
+
+        // graphique qui affiche les produits vendus
+        const productSalesCanvas = document.getElementById("productSales");
+        const productSalesData = JSON.parse("{{ products_data_json|escapejs }}");
+
+        new Chart(productSalesCanvas, {
+            type: "bar",
+            data: {
+                labels: productSalesData.map(item => item.name.substring(0, 5)),
+                datasets: [{
+                    label: "Quantité vendue",
+                    data: productSalesData.map(item => item.quantity),
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Produits vendus'
+                    },
+                    legend: {
+                        display: false,
+                    },
+                }
+            }
+        });
+
+        // Fonction pour obtenir les coordonnées à partir du nom de la ville
+        function getCoordinates(cityName) {
+            // Construire l'URL du service de géocodage
+            const geocodingUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`;
+        
+            // Effectuer une requête HTTP pour obtenir les coordonnées
+            fetch(geocodingUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Vérifier si des résultats ont été obtenus
+                    if (data && data.length > 0) {
+                        // Récupérer les coordonnées du premier résultat (assumant le résultat le plus pertinent)
+                        const latitude = parseFloat(data[0].lat);
+                        const longitude = parseFloat(data[0].lon);
+                    
+                        // Appeler une fonction pour utiliser les coordonnées (par exemple, afficher sur la carte)
+                        handleCoordinates(latitude, longitude);
+                    } else {
+                        console.error("Aucune coordonnée trouvée pour la ville:", cityName);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des coordonnées:", error);
+                });
+        }
+
+        // Fonction pour afficher la carte avec des marqueurs pour les clients
+        function showMapWithMarkers() {
+            // Créez une instance de carte avec la bibliothèque Leaflet
+            const map = L.map('map').setView([48.8566, 2.3522], 6);  // Vue centrée sur Paris (exemple)
+
+            // Ajoutez une couche de carte OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Récupérez les données des clients depuis le contexte Django
+            const customerDataList = JSON.parse("{{ customers_map_json|escapejs }}");
+
+            // Ajoutez un marqueur pour chaque client
+            for (const customerData of customerDataList) {
+                const { coordinates, first_name, last_name, city } = customerData;
+
+                if (coordinates) {
+                    const { latitude, longitude } = coordinates;
+
+                    L.marker([latitude, longitude]).addTo(map)
+                        .bindPopup(`${first_name} ${last_name}<br>${city}`)
+                        .openPopup();
+                }
+            }
+        }
+
+        // Appelez la fonction pour afficher la carte avec les marqueurs
+        showMapWithMarkers();
+
+        // afficher la proportion de commandes validées par client
+        const customerDataValidList = JSON.parse('{{ customer_data_list_json|escapejs }}');
+
+        // Préparez les données pour le graphique
+        const labels = customerDataValidList.map(customer => `${customer.first_name} ${customer.last_name}`);
+        const validOrders = customerDataValidList.map(customer => (customer.valid_orders / customer.total_orders) * 100);
+        const invalidOrders = customerDataValidList.map(customer => (customer.invalid_orders / customer.total_orders) * 100);
+        
+        // Créez le graphique à barres horizontales
+        const chc = document.getElementById('valid');
+        new Chart(chc, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Vérifiées',
+                        data: validOrders,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    },
+                    {
+                        label: 'Non vérifiées',
+                        data: invalidOrders,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    },
+                ],
+            },
+            options: {
+                indexAxis: 'y',
+                elements: {
+                    bar: {
+                        borderWidth: 2,
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Part des devis et des factures par client'
+                    },
+                    legend: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100,
+                    },
+                    y: {
+                        stacked: true,
+                    }
+                }
+            }, 
+        });
+
+        // graphique qui affiche la proportion de devis et de commandes
+        const tot = document.getElementById("total");
+
+        const ordersAllData = JSON.parse("{{ order_data_all_json|escapejs }}");
+        console.log("Orders datas :", ordersAllData);
+
+        new Chart(tot, {
+            type: "pie",
+            data: {
+                labels: ['Factures réglées', 'Devis'],
+                datasets: [
+                    {
+                        data: [ordersAllData[1] || 0, ordersAllData[2] || 0],
+                        backgroundColor: [
+                            "rgba(165, 105, 189, 0.7)",
+                            "rgba(220, 118, 51, 0.7)",
+                        ],
+                        borderColor: [
+                            "rgba(165, 105, 189, 1)",
+                            "rgba(220, 118, 51, 1)",
+                        ],
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options : {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Part des devis et des commandes'
+                    },
+                    legend: {
+                        display: false,
+                    },
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
